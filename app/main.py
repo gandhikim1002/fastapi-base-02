@@ -1,11 +1,13 @@
-import os
+#import os
 
-import redis
+#import redis
 from fastapi import FastAPI, HTTPException, Request
-from app.models import ItemPayload
-from app.src.database import conn
 from contextlib import asynccontextmanager
 
+from app.models import ItemPayload
+from app.src.database import conn
+from app.src.routers.api import router as router_api
+from app.src.config import API_PREFIX, ALLOWED_HOSTS
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -16,6 +18,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+app.include_router(router_api, prefix=API_PREFIX)
+
+'''
 redis_client = redis.StrictRedis(host="0.0.0.0", port=6379, db=0, decode_responses=True)
 
 
@@ -133,3 +138,4 @@ def remove_quantity(item_id: int, quantity: int) -> dict[str, str]:
     else:
         redis_client.hincrby(f"item_id:{item_id}", "quantity", -quantity)
         return {"result": f"{quantity} items removed."}
+'''

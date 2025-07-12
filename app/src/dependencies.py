@@ -1,7 +1,7 @@
 import jwt
 from fastapi import Header, HTTPException
 
-from .database import SessionLocal
+# from .database import SessionLocal
 from sqlmodel import Session
 from app.src.database import engine
 
@@ -19,15 +19,15 @@ def encode():
     return jwt.encode({"some": "payload"}, "secret", algorithm="HS256")
 
 
-def get_db():
-    ''' Method for configure database '''
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# def get_db():
+#     ''' Method for configure database '''
+#     db = SessionLocal()
+#     try:
+#         yield db
+#     finally:
+#         db.close()
 
-def get_session():
+def get_db():
     with Session(engine) as session:
         yield session
 

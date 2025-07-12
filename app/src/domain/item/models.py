@@ -1,11 +1,28 @@
-from sqlmodel import Field, SQLModel
+import uuid
+from sqlmodel import Field, Relationship, SQLModel
+from app.src.domain.user import models
 
-class ItemPayloadV3(SQLModel, table=True):
-    item_id: int | None = Field(default=None, primary_key=True)
-    item_name: str = Field(index=True)
-    quantity: int | None = Field(default=None, index=True)
+class ItemBase(SQLModel):
+    title: str = Field(min_length=1, max_length=255)
+    description: str | None = Field(default=None, max_length=255)
 
-class ItemPayloadV4(SQLModel, table=True):
-    item_id: int | None = Field(default=None, primary_key=True)
-    item_name: str = Field(index=True)
-    quantity: int | None = Field(default=None, index=True)
+class Item(ItemBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    owner_id: uuid.UUID = Field(
+        foreign_key="user.id", nullable=False, ondelete="CASCADE"
+    )
+    owner: models.User | None = Relationship(back_populates="items")
+
+class ItemCreate(ItemBase):
+    pass
+
+class ItemUpdate(ItemBase):
+    title: str | None = Field(default=None, min_length=1, max_length=255)
+
+class ItemPublic(ItemBase):
+    id: uuid.UUID
+    owner_id: uuid.UUID
+
+class ItemsPublic(SQLModel):
+    data: list[ItemPublic]
+    count: int
