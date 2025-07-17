@@ -21,6 +21,8 @@ class User(UserBase, table=True):
     hashed_password: str
     items: list["models.Item"] = Relationship(back_populates="owner", cascade_delete=True)
 
+class UserCreate(UserBase):
+    password: str
 
 '''
 class User(Base):

@@ -1,13 +1,15 @@
 #import os
 
 #import redis
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Depends
 from contextlib import asynccontextmanager
 
 from app.models import ItemPayload
 from app.src.database import conn
 from app.src.routers.api import router as router_api
 from app.src.config import API_PREFIX, ALLOWED_HOSTS
+from app.src.internal import admin
+from app.src.dependencies import get_token_header
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -19,6 +21,14 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(router_api, prefix=API_PREFIX)
+
+app.include_router(
+    admin.router,
+    prefix="/admin",
+    tags=["admin"],
+    dependencies=[Depends(get_token_header)],
+    responses={418: {"description": "I'm a teapot"}},
+)
 
 '''
 redis_client = redis.StrictRedis(host="0.0.0.0", port=6379, db=0, decode_responses=True)

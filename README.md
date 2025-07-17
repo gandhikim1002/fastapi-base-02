@@ -50,3 +50,21 @@ When you submit a pull request, a CLA-bot automatically determines whether you n
 
 ## My Memo
 * pip install 'pydantic[email]'
+* pip freeze > requirements_tmp.txt
+
+## todo 
+* users.create_user
+* auth.create_user
+
+##
+{
+  "full_name": null,
+  "email": "bckim@test.com",
+  "is_active": true,
+  "id": "afbdd46a-b8e3-41fc-afc4-892228f1ab86",
+  "is_superuser": false,
+  "hashed_password": "asdfnotreallyhashed"
+}%
+{
+  "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImdhbmRoaUB0ZXN0LmNvbSIsInBhc3N3b3JkIjoiYXNkZiIsImV4cCI6MTc1MjI5NzcyMH0.eroC_-0s8zwP3rdqpi1Ye7DIezXeC1xOfXtdbDPBp6Q"
+}

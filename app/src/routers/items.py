@@ -6,7 +6,7 @@ from sqlmodel import Session
 
 from ..dependencies import get_token_header, get_db
 from ..domain.item import service, models
-# from app.resources.strings import ITEM_DOES_NOT_EXIST_ERROR
+from app.resources.strings import ITEM_DOES_NOT_EXIST_ERROR
 
 router = APIRouter(
     prefix="/items",
@@ -20,7 +20,7 @@ def read_item(item_id: int, db: Session = Depends(get_db)):
     db_item = service.get_stock(db, stock_id=item_id)
     print("read_item")
     if db_item is None:
-        raise HTTPException(status_code=404, detail="detail=ITEM_DOES_NOT_EXIST_ERR")
+        raise HTTPException(status_code=404, detail=ITEM_DOES_NOT_EXIST_ERROR)
     return db_item
 
 # raise HTTPException(status_code=404, detail=ITEM_DOES_NOT_EXIST_ERROR)
