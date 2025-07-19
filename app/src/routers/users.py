@@ -1,39 +1,40 @@
+import uuid
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
-#from sqlalchemy.orm import Session
 from sqlmodel import Session
 
-from ..dependencies import get_db
-from ..domain.user import service, schemas, models
+from app.src.dependencies import get_db
+from app.src.domain.user import service, models as user_models
+from app.src.domain.item import models as item_models
 
 router = APIRouter(tags=["users"])
 
 
-@router.post("/users/", response_model=models.User)
-def create_user(user: models.UserCreate, db: Session = Depends(get_db)):
+@router.post("/users/", response_model=user_models.User)
+def create_user(user: user_models.UserCreate, db: Session = Depends(get_db)):
     db_user = service.get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     return service.create_user(db=db, user=user)
 
 
-@router.get("/users/", response_model=List[models.User])
+@router.get("/users/", response_model=List[user_models.User])
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = service.get_users(db, skip=skip, limit=limit)
     return users
 
 
-@router.get("/users/{user_id}", response_model=models.User)
-def read_user(user_id: int, db: Session = Depends(get_db)):
+@router.get("/users/{user_id}", response_model=user_models.User)
+def read_user(user_id: uuid.UUID, db: Session = Depends(get_db)):
     db_user = service.get_user(db, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
 
 
-@router.post("/users/{user_id}/items/", response_model=schemas.Item)
+@router.post("/users/{user_id}/items/", response_model=item_models.Item)
 def create_item_for_user(
-        user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
+        user_id: uuid.UUID, item: item_models.ItemCreate, db: Session = Depends(get_db)
 ):
     return service.create_user_item(db=db, item=item, user_id=user_id)

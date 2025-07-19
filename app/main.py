@@ -1,15 +1,16 @@
 #import os
 
 #import redis
-from fastapi import FastAPI, HTTPException, Request, Depends
+from fastapi import FastAPI, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-from app.models import ItemPayload
 from app.src.database import conn
 from app.src.routers.api import router as router_api
 from app.src.config import API_PREFIX, ALLOWED_HOSTS
 from app.src.internal import admin
 from app.src.dependencies import get_token_header
+from app.src.routers.handlers.http_error import http_error_handler
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -22,6 +23,16 @@ app = FastAPI(lifespan=lifespan)
 
 app.include_router(router_api, prefix=API_PREFIX)
 
+app.add_exception_handler(HTTPException, http_error_handler)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_HOSTS or ["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(
     admin.router,
     prefix="/admin",
@@ -29,6 +40,9 @@ app.include_router(
     dependencies=[Depends(get_token_header)],
     responses={418: {"description": "I'm a teapot"}},
 )
+
+
+
 
 '''
 redis_client = redis.StrictRedis(host="0.0.0.0", port=6379, db=0, decode_responses=True)
