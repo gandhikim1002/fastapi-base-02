@@ -11,12 +11,6 @@ def decode(token):
     return jwt.decode(striped_token, SECRET_KEY, algorithms=[ALGORITHM])
 
 
-'''
-def encode():
-    return jwt.encode({"email": "payload"}, SECRET_KEY, algorithm=ALGORITHM)
-'''
-
-
 def get_db():
     with Session(engine) as session:
         yield session
@@ -34,16 +28,9 @@ async def get_token_header(x_token: str = Header(...)):
     try:
         payload = decode(x_token)
         username: str = payload.get("email")
-        if username == None:
+        if username is None:
             raise HTTPException(status_code=403, detail="Unauthorized(None username)")
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=403, detail="Unauthorized(Expired time)") 
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=403, detail="Unauthorized(Invalid token)") 
-
-
-'''
-async def get_query_token(token: str):
-    if token != "jessica":
-        raise HTTPException(status_code=400, detail="No Jessica token provided")
-'''

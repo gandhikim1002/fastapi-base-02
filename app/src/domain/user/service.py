@@ -41,3 +41,9 @@ def create_user_item(db: Session, item: item_models.ItemCreate, user_id: uuid.UU
     db.commit()
     db.refresh(db_item)
     return db_item
+
+
+def remove_user(db: Session, db_user: user_models.User):
+    db.delete(db_user)
+    db.commit
+    return True
